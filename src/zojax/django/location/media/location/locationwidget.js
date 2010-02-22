@@ -36,7 +36,7 @@
 			 			function(position) {
 					 		initial_location = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
 					 	    self.map.setCenter(initial_location);
-					 	    self.setMarker(initial_location)
+					 	    self.setMarker(initial_location);
 				 	    },
 				 	    function() {return;}
 				 	);
