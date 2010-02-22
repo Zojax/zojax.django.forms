@@ -22,6 +22,7 @@
 	
 	LocationWidget.prototype = {
 		init: function() {
+			var self = this;
 			var lat = this.$lat_field.val();
 			var lng = this.$lng_field.val();
 			var initial_location = null;
@@ -29,23 +30,32 @@
 				initial_location = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
 			}
 			this.geocoder = new google.maps.Geocoder();
+			if (initial_location == null) {
+				if (navigator.geolocation) {
+				 	navigator.geolocation.getCurrentPosition(
+			 			function(position) {
+					 		initial_location = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+					 	    self.map.setCenter(initial_location);
+					 	    self.setMarker(initial_location)
+				 	    },
+				 	    function() {return;}
+				 	);
+				} else {
+				 	initial_location = new google.maps.LatLng(40.69847032728747, -73.9514422416687); // New York
+				}
+			} 
 			var map_options = {
-				zoom: 8,
-				mapTypeId: google.maps.MapTypeId.ROADMAP
-		    };
-			if (initial_location != null) {
-				map_options.center = initial_location;	
-			}
+					zoom: 8,
+					center: initial_location,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+			    };
 			this.map = new google.maps.Map(this.$canvas.get(0), map_options);
 		    this.marker = new google.maps.Marker({
 		        map: this.map, 
-		        position: this.map.getCenter()
+		        position: initial_location
 		    });
-			if (initial_location != null) {
-				this.setMarker(initial_location);
-			}
+		    this.setMarker(initial_location);
 		    this.info_window = new google.maps.InfoWindow();
-		    var self = this;
 		    google.maps.event.addListener(this.map, 'click', function(event) {
 		        self.setMarker(event.latLng);
 		    });
