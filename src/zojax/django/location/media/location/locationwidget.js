@@ -31,18 +31,17 @@
 			}
 			this.geocoder = new google.maps.Geocoder();
 			if (initial_location == null) {
-				if (navigator.geolocation) {
-				 	navigator.geolocation.getCurrentPosition(
-			 			function(position) {
-					 		initial_location = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-					 	    self.map.setCenter(initial_location);
-					 	    self.setMarker(initial_location);
-				 	    },
-				 	    function() {return;}
-				 	);
-				} else {
-				 	initial_location = new google.maps.LatLng(40.69847032728747, -73.9514422416687); // New York
-				}
+			 	initial_location = new google.maps.LatLng(40.69847032728747, -73.9514422416687); // New York
+//				if (navigator.geolocation) {
+//				 	navigator.geolocation.getCurrentPosition(
+//			 			function(position) {
+//					 		initial_location = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+//					 	    self.map.setCenter(initial_location);
+//					 	    self.setMarker(initial_location);
+//				 	    },
+//				 	    function() {return;}
+//				 	);
+//				}
 			} 
 			var map_options = {
 					zoom: 8,
