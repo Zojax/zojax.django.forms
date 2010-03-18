@@ -7,6 +7,9 @@ class LocationWidget(forms.Widget):
     
     LAT_SUFFIX = "_lat"
     LNG_SUFFIX = "_lng"
+    COUNTRY_SUFFIX = "_country"
+    CITY_SUFFIX = "_city"
+    STATE_SUFFIX = "_state"
     DEFAULT_PRECISION = "locality"
     
     def __init__(self, *args, **kwargs):
@@ -33,7 +36,10 @@ class LocationWidget(forms.Widget):
         try:
             lat = float(data[name+self.LAT_SUFFIX])
             lng = float(data[name+self.LNG_SUFFIX])
-            return (lat, lng)
+            country = data[name+self.COUNTRY_SUFFIX]
+            state = data[name+self.STATE_SUFFIX]
+            city = data[name+self.CITY_SUFFIX]
+            return (lat, lng, country, state, city)
         except:
             return None
 
@@ -44,8 +50,8 @@ class LocationField(forms.Field):
     
     def clean(self, value):
         value = super(LocationField, self).clean(value)
-        if not isinstance(value, tuple) or len(value) != 2 or \
+        if not isinstance(value, tuple) or len(value) != 5 or \
             not isinstance(value[0], float) or not isinstance(value[1], float):
-            raise ValidationError(u"Location must be a two floats tuple.")
+            raise ValidationError(u"Location must be at least two floats tuple.")
         return value
 

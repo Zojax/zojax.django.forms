@@ -10,10 +10,13 @@
 	  'country',
     ];
 	
-	window.LocationWidget = function(canvas, lat_field, lng_field, search_field, search_button, precision) {
+	window.LocationWidget = function(canvas, lat_field, lng_field, country_field, state_field, city_field, search_field, search_button, precision) {
 		this.$canvas = $(canvas);
 		this.$lat_field = $(lat_field);
 		this.$lng_field = $(lng_field);
+		this.$country_field = $(country_field);
+		this.$state_field = $(state_field);
+		this.$city_field= $(city_field);
 		this.$search_field = $(search_field);
 		this.$search_button = $(search_button);
 		this.precision = precision;
@@ -67,6 +70,18 @@
 	    	});
 		},
 		
+		getComponent: function getComponent(resp, type, format) {
+		    if (!format)
+		        format='long_name';
+		        
+            for (var i = 0; i < resp.length; i++) {
+                for (var k = 0; k < resp[i].types.length; k++) {
+                    if (type == resp[i].types[k])
+                        return resp[i][format]
+                }
+            }
+        },
+		
 		setMarker: function(location) {
 			this.marker.setPosition(location);
 			this.$lat_field.val(location.lat());
@@ -92,6 +107,10 @@
 								address = results[0].formatted_address;
 							}
 						}
+						var resp = results[0].address_components;
+						self.$country_field.val(self.getComponent(resp, 'country'));
+						self.$state_field.val(self.getComponent(resp, 'administrative_area_level_1'));
+						self.$city_field.val(self.getComponent(resp, 'locality'));
 					}
 					if (address != null) {
 						self.info_window.setContent(address);

@@ -1,5 +1,8 @@
 <input type="hidden" name="{{ name }}{{ widget.LAT_SUFFIX }}" value="{{ lat }}" />
 <input type="hidden" name="{{ name }}{{ widget.LNG_SUFFIX }}" value="{{ lng }}" />
+<input type="hidden" name="{{ name }}{{ widget.COUNTRY_SUFFIX }}" value="{{ country }}" />
+<input type="hidden" name="{{ name }}{{ widget.STATE_SUFFIX }}" value="{{ state }}" />
+<input type="hidden" name="{{ name }}{{ widget.CITY_SUFFIX }}" value="{{ city }}" />
 <div id="{{ name }}_map_canvas" style="width: 500px; height: 300px;"></div>
 Search: <input id="{{ name }}_search" type="textbox" value=""><input type="button" value="Search" id="{{ name }}_search_button" />
 <script type="text/javascript">
@@ -8,6 +11,9 @@ Search: <input id="{{ name }}_search" type="textbox" value=""><input type="butto
             "#{{ name }}_map_canvas",
             "input[name='{{ name }}{{ widget.LAT_SUFFIX }}']",
             "input[name='{{ name }}{{ widget.LNG_SUFFIX }}']",
+            "input[name='{{ name }}{{ widget.COUNTRY_SUFFIX }}']",
+            "input[name='{{ name }}{{ widget.STATE_SUFFIX }}']",
+            "input[name='{{ name }}{{ widget.CITY_SUFFIX }}']",
             "#{{ name }}_search",
             "#{{ name }}_search_button",
             "{{ precision }}"
