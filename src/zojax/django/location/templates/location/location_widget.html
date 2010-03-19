@@ -4,7 +4,7 @@
 <input type="hidden" name="{{ name }}{{ widget.STATE_SUFFIX }}" value="{{ state }}" />
 <input type="hidden" name="{{ name }}{{ widget.CITY_SUFFIX }}" value="{{ city }}" />
 <div id="{{ name }}_map_canvas" style="width: 500px; height: 300px;"></div>
-Search: <input id="{{ name }}_search" type="textbox" value=""><input type="button" value="Search" id="{{ name }}_search_button" />
+Enter New Location: <input id="{{ name }}_search" type="textbox" value=""><input type="button" value="Submit" id="{{ name }}_search_button" />
 <script type="text/javascript">
     $(function() {
         new LocationWidget(
