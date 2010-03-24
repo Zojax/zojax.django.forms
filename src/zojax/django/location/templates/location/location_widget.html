@@ -4,7 +4,9 @@
 <input type="hidden" name="{{ name }}{{ widget.STATE_SUFFIX }}" value="{{ state }}" />
 <input type="hidden" name="{{ name }}{{ widget.CITY_SUFFIX }}" value="{{ city }}" />
 <div id="{{ name }}_map_canvas" style="width: 500px; height: 300px;"></div>
-Enter new location: <input id="{{ name }}_search" type="textbox" value=""><input type="button" value="Submit" id="{{ name }}_search_button" />
+{% if not widget.attrs.readonly %}
+{% if widget.attrs.showMap %}Enter new location: {% endif %}<input id="{{ name }}_search" type="textbox" value="">{% if widget.attrs.showMap %}<input type="button" value="Submit" id="{{ name }}_search_button" />{% endif %}
+{% endif %}
 <script type="text/javascript">
     $(function() {
         new LocationWidget(
@@ -16,7 +18,9 @@ Enter new location: <input id="{{ name }}_search" type="textbox" value=""><input
              city_field:"input[name='{{ name }}{{ widget.CITY_SUFFIX }}']",
              search_field:"#{{ name }}_search",
              search_button:"#{{ name }}_search_button",
-             precision:"{{ precision }}"}
+             precision:"{{ precision }}",
+             showMap: {{ showMap }},
+             readonly: {{ readonly }}}
         );
     });
 </script>

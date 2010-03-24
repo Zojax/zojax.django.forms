@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
+import simplejson
 
 
 class LocationWidget(forms.Widget):
@@ -10,7 +11,7 @@ class LocationWidget(forms.Widget):
     COUNTRY_SUFFIX = "_country"
     CITY_SUFFIX = "_city"
     STATE_SUFFIX = "_state"
-    DEFAULT_PRECISION = "locality"
+    DEFAULT_PRECISION = "postal_code"
     
     def __init__(self, *args, **kwargs):
         if 'precision' in kwargs:
@@ -29,7 +30,9 @@ class LocationWidget(forms.Widget):
             lng = ""
         return render_to_string("location/location_widget.html",
                                 {'lat': lat, 'lng': lng,
-                                 'name': name, 'precision': self.precision, 
+                                 'name': name, 'precision': self.precision,
+                                 'showMap': simplejson.dumps(self.attrs['showMap']),
+                                 'readonly': simplejson.dumps(self.attrs['readonly']),
                                  'widget': self})
         
     def value_from_datadict(self, data, files, name):
@@ -48,10 +51,20 @@ class LocationField(forms.Field):
     
     widget = LocationWidget
     
+    def __init__(self, showMap=True, readonly=False, *kv, **kw):
+        self.showMap = showMap
+        self.readonly = readonly
+        super(LocationField, self).__init__(*kv, **kw)
+        
+    
     def clean(self, value):
         value = super(LocationField, self).clean(value)
         if not isinstance(value, tuple) or len(value) != 5 or \
             not isinstance(value[0], float) or not isinstance(value[1], float):
             raise ValidationError(u"Location must be at least two floats tuple.")
         return value
-
+    
+    def widget_attrs(self, widget):
+        return {'showMap': self.showMap,
+                'readonly': self.readonly}
+    

@@ -4,6 +4,8 @@
       'street_address',
       'sublocality',	                      
       'locality',
+      'political',
+      'postal_code',
 	  'administrative_area_level_3',
 	  'administrative_area_level_2',
 	  'administrative_area_level_1',
@@ -24,10 +26,15 @@
 	
 	window.LocationWidget = function(config) {
 	    config =  $.extend({readonly: false, 
-                            precision: 'locality',
-                            showMap: true},
+                            precision: 'postal_code',
+                            showMap: true,
+                            readonly: false},
                             config);
 	    this.$canvas = $(config.canvas);
+	    this.showMap = config.showMap;
+	    this.readonly = config.readonly;
+	    if (!this.showMap)
+	        this.$canvas.hide();
 		this.$lat_field = $(config.lat_field);
 		this.$lng_field = $(config.lng_field);
 		this.$country_field = $(config.country_field);
@@ -62,28 +69,40 @@
 //				 	);
 //				}
 			} 
-			var map_options = {
+            if (this.showMap) {
+                var map_options = {
 					zoom: 8,
 					center: initial_location,
 					mapTypeId: google.maps.MapTypeId.ROADMAP
 			    };
-			this.map = new google.maps.Map(this.$canvas.get(0), map_options);
-		    this.marker = new google.maps.Marker({
-		        map: this.map, 
-		        position: initial_location
-		    });
-		    this.setMarker(initial_location);
-		    this.info_window = new google.maps.InfoWindow();
-		    google.maps.event.addListener(this.map, 'click', function(event) {
-		        self.setMarker(event.latLng);
-		    });
-		    this.$search_button.click(function() {self.search();});
-		    this.$search_field.keydown(function(event) {
-		    	if (event.keyCode == '13') {
-		    		self.search();
-		    	    event.preventDefault();
-		        }
-	    	});
+    			this.map = new google.maps.Map(this.$canvas.get(0), map_options);
+    			this.marker = new google.maps.Marker({
+    		        map: this.map, 
+    		        position: initial_location
+    		    });
+    		    this.info_window = new google.maps.InfoWindow();
+    		    this.setMarker(initial_location);
+    		    if (!this.readonly) {
+        		    google.maps.event.addListener(this.map, 'click', function(event) {
+        		        self.setMarker(event.latLng);
+        		    });
+    		    }
+            }
+            else {
+                this.setMarker(initial_location);
+                this.$lat_field.parents('form').submit(function() {
+                    self.search()
+                })
+            }
+		    if (!this.readonly) {
+                this.$search_button.click(function() {self.search();});
+    		    this.$search_field.keydown(function(event) {
+    		    	if (event.keyCode == '13') {
+    		    		self.search();
+    		    	    event.preventDefault();
+    		        }
+    	    	});
+		    }
 		},
 		
 		getComponent: function getComponent(resp, type, format) {
@@ -99,7 +118,8 @@
         },
 		
 		setMarker: function(location) {
-			this.marker.setPosition(location);
+			if (this.showMap)
+			    this.marker.setPosition(location);
 			this.$lat_field.val(location.lat());
 			this.$lng_field.val(location.lng());
 			var self = this;
@@ -129,13 +149,20 @@
 						self.$city_field.val(self.getComponent(resp, 'locality'));
 					}
 					if (address != null) {
-						self.info_window.setContent(address);
-						self.info_window.open(self.map, self.marker);
+	                    if (self.showMap) {
+	                        self.info_window.setContent(address);
+	                        self.info_window.open(self.map, self.marker);
+	                    }
+	                    self.$search_field.val(address)
 					} else {
-						self.info_window.close();
+					    if (self.showMap) {
+					        self.info_window.close();
+					    }
+					    self.$search_field.val('Address not found. Please try again');
+					    self.$search_field.select()
 					}
 				} else {
-					alert("Geocoder failed due to: " + status);
+					//alert("Geocoder failed due to: " + status);
 				}
 			});
 		},
@@ -152,7 +179,7 @@
 						self.setMarker(results[0].geometry.location);
 					}
 				} else {
-					alert("Geocoder failed due to: " + status);
+					//alert("Geocoder failed due to: " + status);
 				}
 			});
 		}
