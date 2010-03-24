@@ -7,19 +7,35 @@
 	  'administrative_area_level_3',
 	  'administrative_area_level_2',
 	  'administrative_area_level_1',
-	  'country',
+	  'country'
     ];
 	
-	window.LocationWidget = function(canvas, lat_field, lng_field, country_field, state_field, city_field, search_field, search_button, precision) {
-		this.$canvas = $(canvas);
-		this.$lat_field = $(lat_field);
-		this.$lng_field = $(lng_field);
-		this.$country_field = $(country_field);
-		this.$state_field = $(state_field);
-		this.$city_field= $(city_field);
-		this.$search_field = $(search_field);
-		this.$search_button = $(search_button);
-		this.precision = precision;
+	/*config is of the form
+    {canvas: "some-dom-element-id",
+     lat_field: "some-dom-element-id",
+     lng_field: "some-dom-element-id",
+     country_field: "some-dom-element-id",
+     state_field: "some-dom-element-id",
+     city_field: "some-dom-element-id",
+     search_field: "some-dom-element-id",
+     search_button: "some-dom-element-id", 
+     precision: "locality"
+    */
+	
+	window.LocationWidget = function(config) {
+	    config =  $.extend({readonly: false, 
+                            precision: 'locality',
+                            showMap: true},
+                            config);
+	    this.$canvas = $(config.canvas);
+		this.$lat_field = $(config.lat_field);
+		this.$lng_field = $(config.lng_field);
+		this.$country_field = $(config.country_field);
+		this.$state_field = $(config.state_field);
+		this.$city_field= $(config.city_field);
+		this.$search_field = $(config.search_field);
+		this.$search_button = $(config.search_button);
+		this.precision = config.precision;
 		this.init();
 	}
 	

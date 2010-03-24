@@ -8,15 +8,15 @@ Enter new location: <input id="{{ name }}_search" type="textbox" value=""><input
 <script type="text/javascript">
     $(function() {
         new LocationWidget(
-            "#{{ name }}_map_canvas",
-            "input[name='{{ name }}{{ widget.LAT_SUFFIX }}']",
-            "input[name='{{ name }}{{ widget.LNG_SUFFIX }}']",
-            "input[name='{{ name }}{{ widget.COUNTRY_SUFFIX }}']",
-            "input[name='{{ name }}{{ widget.STATE_SUFFIX }}']",
-            "input[name='{{ name }}{{ widget.CITY_SUFFIX }}']",
-            "#{{ name }}_search",
-            "#{{ name }}_search_button",
-            "{{ precision }}"
+            {canvas:"#{{ name }}_map_canvas",
+             lat_field:"input[name='{{ name }}{{ widget.LAT_SUFFIX }}']",
+             lng_field:"input[name='{{ name }}{{ widget.LNG_SUFFIX }}']",
+             country_field:"input[name='{{ name }}{{ widget.COUNTRY_SUFFIX }}']",
+             state_field:"input[name='{{ name }}{{ widget.STATE_SUFFIX }}']",
+             city_field:"input[name='{{ name }}{{ widget.CITY_SUFFIX }}']",
+             search_field:"#{{ name }}_search",
+             search_button:"#{{ name }}_search_button",
+             precision:"{{ precision }}"}
         );
     });
 </script>
