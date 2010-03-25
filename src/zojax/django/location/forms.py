@@ -1,8 +1,10 @@
+import sys
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 import simplejson
-
+from models import LocatedItem
 
 class LocationWidget(forms.Widget):
     
@@ -59,12 +61,24 @@ class LocationField(forms.Field):
     
     def clean(self, value):
         value = super(LocationField, self).clean(value)
-        if not isinstance(value, tuple) or len(value) != 5 or \
-            not isinstance(value[0], float) or not isinstance(value[1], float):
-            raise ValidationError(u"Location must be at least two floats tuple.")
+        if not isinstance(value, LocatedItem):
+            raise ValidationError(u"Location must be a located item object.")
         return value
     
     def widget_attrs(self, widget):
         return {'showMap': self.showMap,
                 'readonly': self.readonly}
+        
+    def to_python(self, value):
+        cur_frame = sys._getframe().f_back
+        form = None
+        try:
+            while cur_frame is not None:
+                frm = cur_frame.f_locals.get('self')
+                if isinstance(frm, forms.BaseForm):
+                    form = frm
+                cur_frame = cur_frame.f_back
+        finally:
+            del cur_frame
+        return LocatedItem(lat=value[0], lng=value[1], country=value[2], state=value[3], city=value[4], content_object=form.instance)
     
