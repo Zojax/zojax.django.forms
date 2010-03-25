@@ -24,9 +24,10 @@ class LocationWidget(forms.Widget):
         super(LocationWidget, self).__init__(*args, **kwargs)
     
     def render(self, name, value, attrs=None):
+        value = LocatedItem.objects.get(id=value)
         if value:
-            lat = str(value[0])
-            lng = str(value[1])
+            lat = value.lat
+            lng = value.lng
         else:
             lat = ""
             lng = ""
@@ -80,5 +81,10 @@ class LocationField(forms.Field):
                 cur_frame = cur_frame.f_back
         finally:
             del cur_frame
-        return LocatedItem(lat=value[0], lng=value[1], country=value[2], state=value[3], city=value[4], content_object=form.instance)
-    
+        try:
+            item = LocatedItem.objects.filter(object_id=form.instance.id)[0]
+        except IndexError:
+            item = LocatedItem(content_object=form.instance)
+        item.lat, item.lng, item.country, item.state, item.city = value
+        item.save()
+        return item
