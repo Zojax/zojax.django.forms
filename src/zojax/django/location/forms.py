@@ -24,11 +24,14 @@ class LocationWidget(forms.Widget):
         super(LocationWidget, self).__init__(*args, **kwargs)
     
     def render(self, name, value, attrs=None):
-        if value:
+        if isinstance(value, int):
             value, created = LocatedItem.objects.get_or_create(id=value)
             if value:
                 lat = value.lat
                 lng = value.lng
+        elif value:
+            lat = value[0]
+            lng = value[1]
         else:
             lat = ""
             lng = ""
