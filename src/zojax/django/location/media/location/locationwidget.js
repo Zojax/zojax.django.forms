@@ -43,6 +43,7 @@
 		this.$search_field = $(config.search_field);
 		this.$search_button = $(config.search_button);
 		this.precision = config.precision;
+		this.searching = false;
 		this.init();
 	}
 	
@@ -91,7 +92,11 @@
             else {
                 this.setMarker(initial_location);
                 this.$lat_field.parents('form').submit(function() {
-                    self.search()
+                    if (self.searching)
+                        return;
+                    self.searching = true;
+                    self.search(function () {self.$lat_field.parents('form').submit()});
+                    return false
                 })
             }
 		    if (!this.readonly) {
@@ -117,7 +122,7 @@
             }
         },
 		
-		setMarker: function(location) {
+		setMarker: function(location, callback) {
 			if (this.showMap)
 			    this.marker.setPosition(location);
 			this.$lat_field.val(location.lat());
@@ -154,6 +159,8 @@
 	                        self.info_window.open(self.map, self.marker);
 	                    }
 	                    self.$search_field.val(address)
+	                    if (callback)
+	                        callback()
 					} else {
 					    if (self.showMap) {
 					        self.info_window.close();
@@ -167,8 +174,9 @@
 			});
 		},
 		
-		search: function() {
+		search: function(callback) {
 			var address = this.$search_field.val();
+			this.$search_field.val('Geocoding...');
 			if (address == '') {
 				return;
 			}
@@ -176,10 +184,12 @@
 			this.geocoder.geocode({'address': address}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
 					if (results.length) {
-						self.setMarker(results[0].geometry.location);
+						self.setMarker(results[0].geometry.location, callback);
 					}
 				} else {
-					//alert("Geocoder failed due to: " + status);
+				    this.$search_field.val('Geocoding failed. Please try another address');
+				    this.$search_field.select()
+				    //alert("Geocoder failed due to: " + status);
 				}
 			});
 		}
