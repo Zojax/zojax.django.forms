@@ -12,6 +12,16 @@
 	  'country'
     ];
 	
+	if (!Array.indexOf) {
+	    Array.prototype.indexOf = function (obj, start) {
+	      for (var i = (start || 0); i < this.length; i++) {
+	        if (this[i] == obj) {
+	          return i;
+	        }
+	      }
+	    }
+	  }
+	
 	/*config is of the form
     {canvas: "some-dom-element-id",
      lat_field: "some-dom-element-id",
