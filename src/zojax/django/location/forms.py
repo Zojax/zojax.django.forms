@@ -25,7 +25,7 @@ class LocationWidget(forms.Widget):
     
     def render(self, name, value, attrs=None):
         if value:
-            value = LocatedItem.objects.get_or_create(id=value)
+            value, created = LocatedItem.objects.get_or_create(id=value)
             if value:
                 lat = value.lat
                 lng = value.lng
