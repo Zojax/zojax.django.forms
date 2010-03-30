@@ -1,6 +1,7 @@
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 
 class LocatedItem(models.Model):
@@ -33,10 +34,24 @@ class BaseReference(models.Model):
 class Country(BaseReference):
     pass
 
+    class Meta:
+        verbose_name = _(u"Country")
+        verbose_name_plural = _(u"Countries")
+        ordering = ['name']
+
 
 class State(BaseReference):
     country = models.ForeignKey(Country)
 
+    class Meta:
+        verbose_name = _(u"State")
+        verbose_name_plural = _(u"States")
+        ordering = ['name']
 
 class City(BaseReference):
     state = models.ForeignKey(State)
+
+    class Meta:
+        verbose_name = _(u"City")
+        verbose_name_plural = _(u"Cities")
+        ordering = ['name']
