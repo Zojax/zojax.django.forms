@@ -5,7 +5,7 @@
 <input type="hidden" name="{{ name }}{{ widget.CITY_SUFFIX }}" value="{{ city }}" />
 <div id="{{ name }}_map_canvas" style="width: 500px; height: 300px;"></div>
 {% if not widget.attrs.readonly %}
-{% if widget.attrs.showMap %}Enter new location: {% endif %}<input id="{{ name }}_search" type="textbox" value="">{% if widget.attrs.showMap %}<input type="button" value="Submit" id="{{ name }}_search_button" />{% endif %}
+{% if widget.attrs.showMap %}Enter new location: {% endif %}<input id="{{ name }}_search" type="textbox" value="" />{% if widget.attrs.showMap %}<input type="button" value="Submit" id="{{ name }}_search_button" />{% endif %}
 {% endif %}
 <script type="text/javascript">
     $(function() {

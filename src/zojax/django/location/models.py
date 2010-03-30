@@ -17,3 +17,26 @@ class LocatedItem(models.Model):
     def __unicode__(self):
         return "%s:%s" % (str(self.lat), str(self.lng))
     
+
+class BaseReference(models.Model):
+
+    name = models.CharField(verbose_name=u"Name", null=False, blank=False, max_length=300)
+
+    class Meta:
+        abstract = True
+        ordering = ['name']
+        
+    def __unicode__(self):
+        return self.name
+
+
+class Country(BaseReference):
+    pass
+
+
+class State(BaseReference):
+    country = models.ForeignKey(Country)
+
+
+class City(BaseReference):
+    state = models.ForeignKey(State)
