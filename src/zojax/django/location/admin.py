@@ -5,4 +5,4 @@ from django.utils.translation import ugettext_lazy as _
 
 from models import City, Country, State
 
-admin.site.register([Country, State, Country])
+admin.site.register([Country, State, City])
