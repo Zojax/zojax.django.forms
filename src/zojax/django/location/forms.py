@@ -1,6 +1,7 @@
 import sys
 
 from django import forms
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 import simplejson
@@ -14,6 +15,11 @@ class LocationWidget(forms.Widget):
     CITY_SUFFIX = "_city"
     STATE_SUFFIX = "_state"
     DEFAULT_PRECISION = "postal_code"
+    
+    class Media:
+                js = ('http://maps.google.com/maps/api/js?sensor=false',
+                      '%slocation/locationwidget.js' % settings.MEDIA_URL,
+                )
     
     def __init__(self, *args, **kwargs):
         if 'precision' in kwargs:
