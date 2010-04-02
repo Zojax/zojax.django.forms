@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
+from zojax.django.widgets.autocomplete.widgets import AutocompleteWidget
 import simplejson
 from models import LocatedItem
 
@@ -30,17 +31,23 @@ class LocationWidget(forms.Widget):
         super(LocationWidget, self).__init__(*args, **kwargs)
     
     def render(self, name, value, attrs=None):
+        lat = ''
+        lng = ''
         if isinstance(value, int):
-            value, created = LocatedItem.objects.get_or_create(id=value)
-            if value:
+            try:
+                value = LocatedItem.objects.get(id=value)
                 lat = value.lat
                 lng = value.lng
+            except LocatedItem.DoesNotExist:
+                pass
+        elif isinstance(value, LocatedItem):
+            lat = value.lat
+            lng = value.lng
         elif value:
             lat = value[0]
             lng = value[1]
-        else:
-            lat = ""
-            lng = ""
+        if lat is None or lng is None:
+            lat, lng = "", ""
         return render_to_string("location/location_widget.html",
                                 {'lat': lat, 'lng': lng,
                                  'name': name, 'precision': self.precision,
@@ -58,6 +65,80 @@ class LocationWidget(forms.Widget):
             return (lat, lng, country, state, city)
         except:
             return None
+        
+
+class LocationChoiceWidget(forms.Widget):
+    
+    def __init__(self, attrs=None):
+        self.location = LocationWidget(attrs={'showMap': False, 'readonly': False}) 
+        self.city = AutocompleteWidget(choices_url='location_autocomplete_cities',
+                                                                 related_fields=('state', 'country'),
+                                                                 options={'autoFill': True, 'minChars': 0})
+        self.state = AutocompleteWidget(choices_url='location_autocomplete_states',
+                                                                 related_fields=('city', 'country'),
+                                                                 options={'autoFill': True, 'minChars': 0})
+        self.country = AutocompleteWidget(choices_url='location_autocomplete_countries',
+                                                                 related_fields=('city', 'state'),
+                                                                 options={'autoFill': True, 'minChars': 0})
+        super(LocationChoiceWidget, self).__init__(attrs)
+
+    def value_from_datadict(self, data, files, name):
+        return self.location.value_from_datadict(data, files, name + '_location')
+    
+    def render(self, name, value, attrs=None):
+        # value is a list of values, each corresponding to a widget
+        # in self.widgets.
+        for widget in [self.city, self.state, self.country]:
+            for k, v in widget.extra.items():
+                if not k.startswith(name+'_'):
+                    del widget.extra[k]
+                    widget.extra[name+'_' +k] = name+'_'+v
+        output = []
+        final_attrs = self.build_attrs(attrs)
+        id_ = final_attrs.get('id', None)
+
+        widget_value = value
+        widget_name = '%s_location'%name
+        widget = self.location
+        if id_:
+            final_attrs = dict(id='%s_location' % id_)
+        output.append((widget.render(widget_name, widget_value, final_attrs), final_attrs, widget_name))
+
+        widget_value = value.country
+        widget_name = '%s_country'%name
+        widget = self.country
+        if id_:
+            final_attrs = dict(id='%s_country' % id_)
+        output.append((widget.render(widget_name, widget_value, final_attrs), final_attrs, widget_name))
+
+        widget_value = value.state
+        widget_name = '%s_state'%name
+        widget = self.state
+        if id_:
+            final_attrs = dict(id='%s_state' % id_)
+        output.append((widget.render(widget_name, widget_value, final_attrs), final_attrs, widget_name))
+
+        widget_value = value.city
+        widget_name = '%s_city'%name
+        widget = self.city
+        if id_:
+            final_attrs = dict(id='%s_city' % id_)
+        output.append((widget.render(widget_name, widget_value, final_attrs), final_attrs, widget_name))
+        
+        return render_to_string("location/location_choicewidget.html",
+                                {'widgets': output,
+                                 'widget': self})
+        
+    def _has_changed(self, initial, data):
+        return self.location._has_changed(initial, data)
+
+    def _get_media(self):
+        "Media for a multiwidget is the combination of all media of the subwidgets"
+        media = forms.widgets.Media()
+        for w in [self.location, self.city, self.state, self.country]:
+            media = media + w.media
+        return media
+    media = property(_get_media)
 
 
 class LocationField(forms.Field):
@@ -91,10 +172,14 @@ class LocationField(forms.Field):
                 cur_frame = cur_frame.f_back
         finally:
             del cur_frame
-        try:
-            item = LocatedItem.objects.filter(object_id=form.instance.id)[0]
-        except IndexError:
-            item = LocatedItem(content_object=form.instance)
+        item = LocatedItem.objects.get_for_object(form.instance)
         item.lat, item.lng, item.country, item.state, item.city = value
+        if form.instance.pk is None:
+            return item
         item.save()
         return item
+    
+
+class LocationChoiceField(LocationField):
+    
+    widget = LocationChoiceWidget
