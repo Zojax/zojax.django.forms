@@ -88,6 +88,16 @@ class LocationChoiceWidget(forms.Widget):
     def render(self, name, value, attrs=None):
         # value is a list of values, each corresponding to a widget
         # in self.widgets.
+        if isinstance(value, int):
+            try:
+                value = LocatedItem.objects.get(id=value)
+                lat = value.lat
+                lng = value.lng
+            except LocatedItem.DoesNotExist:
+                pass
+        elif not isinstance(value, LocatedItem):
+            value = LocatedItem(lat=value[0], lng=value[1], country=value[2], state=value[3], city=value[4])
+        
         for widget in [self.city, self.state, self.country]:
             for k, v in widget.extra.items():
                 if not k.startswith(name+'_'):
