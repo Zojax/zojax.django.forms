@@ -142,13 +142,13 @@ class LocationChoiceWidget(forms.Widget):
     def _has_changed(self, initial, data):
         return self.location._has_changed(initial, data)
 
-    def _get_media(self):
+    @property
+    def media(self):
         "Media for a multiwidget is the combination of all media of the subwidgets"
         media = forms.widgets.Media()
         for w in [self.location, self.city, self.state, self.country]:
             media = media + w.media
         return media
-    media = property(_get_media)
 
 
 class LocationField(forms.Field):
