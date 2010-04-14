@@ -29,6 +29,7 @@ setup(name='zojax.django.location',
           'setuptools',
           'django-staticfiles',
           'zojax.django.jquery',
+          'zojax.django.widgets.autocomplete'
           # -*- Extra requirements: -*-
       ],
       entry_points="""
