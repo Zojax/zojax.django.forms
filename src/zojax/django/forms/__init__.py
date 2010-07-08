@@ -15,7 +15,7 @@ def register(model, location_descriptor_attr='location'):
     Sets the given model class up for working with categories.
     """
 
-    from zojax.django.location.managers import LocationDescriptor
+    from zojax.django.forms.managers import LocationDescriptor
 
     if model in registry:
         raise AlreadyRegistered("The model '%s' has already been "

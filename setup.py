@@ -3,9 +3,9 @@ import os
 
 version = '0.1dev'
 
-setup(name='zojax.django.location',
+setup(name='zojax.django.forms',
       version=version,
-      description="Generic geo location annotation for Django content types.",
+      description="Django forms utils.",
       long_description="",
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
@@ -13,8 +13,8 @@ setup(name='zojax.django.location',
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
       keywords='',
-      author='Andrey Fedoseev',
-      author_email='andrey.fedoseev@zojax.com',
+      author='Anatoly Bubenkov',
+      author_email='bubenkoff@zojax.com',
       url='',
       license='GPL',
       packages=find_packages('src'),
@@ -27,9 +27,6 @@ setup(name='zojax.django.location',
         ),
       install_requires=[
           'setuptools',
-          'django-staticfiles',
-          'zojax.django.jquery',
-          'zojax.django.widgets.autocomplete'
           # -*- Extra requirements: -*-
       ],
       entry_points="""
