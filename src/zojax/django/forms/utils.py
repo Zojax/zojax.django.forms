@@ -1,6 +1,9 @@
+import re
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
+
+ws = re.compile('\w+')
 
 def autostrip(cls):
     fields = [(key, value) for key, value in cls.base_fields.iteritems() if isinstance(value, forms.CharField)]
@@ -17,6 +20,15 @@ def autostrip(cls):
             return validate
         field_object.validate = get_validate_func(field_object.validate)
     return cls
+
+def nowhitespace(field):
+    def get_validate_func(original):
+        def validate(value):
+            original(value)
+            if value and ws.search(value):
+                raise ValidationError(_("Value shouldn't contain whitespace characters"))
+        return validate
+    field.validate = get_validate_func(field.validate)
 
 __test__ = {'USAGE': """
 
