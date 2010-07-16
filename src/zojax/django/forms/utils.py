@@ -3,7 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
-ws = re.compile('\w+')
+ws = re.compile('\s+')
 
 def autostrip(cls):
     fields = [(key, value) for key, value in cls.base_fields.iteritems() if isinstance(value, forms.CharField)]
