@@ -66,7 +66,6 @@ def wrap(text, width):
                 word="\n".join(lines)
             else:
                 lines = (word,)
-            print lines
             pos += len(lines[0]) + 1
             if pos > width:
                 yield '\n'
