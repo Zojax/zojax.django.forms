@@ -24,7 +24,6 @@ def get_fieldset_exclude(parser, token):
         name, fields, variable_name, form = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError('bad arguments for %r'  % token.split_contents()[0])
-
     return FieldSetNode(fields.split(','), variable_name, form, True)
 
 
@@ -41,10 +40,8 @@ class FieldSetNode(template.Node):
         new_form = copy.copy(form)
         check_key = lambda key: bool(filter(lambda x: x.startswith(key), self.fields))
         if self.exclude:
-            check_key = lambda key: bool(filter(lambda x: not x.startswith(key), self.fields))
-            
+            check_key = lambda key: not bool(filter(lambda x: x.startswith(key), self.fields))
         new_form.fields = SortedDict([(key, value) for key, value in form.fields.items() if check_key(key)])
-
         context[self.variable_name] = new_form
 
         return u''
