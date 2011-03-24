@@ -41,9 +41,7 @@ class FieldSetNode(template.Node):
         check_key = lambda key: bool(filter(lambda x: x.startswith(key), self.fields))
         if self.exclude:
             check_key = lambda key: not bool(filter(lambda x: x.startswith(key), self.fields))
-            
         new_form.fields = SortedDict([(key, value) for key, value in form.fields.items() if check_key(key)])
-
         context[self.variable_name] = new_form
 
         return u''

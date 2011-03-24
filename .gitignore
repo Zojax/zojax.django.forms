@@ -3,6 +3,7 @@
 *.pyc
 *.sh
 *.sql
+*.egg-info
 .DS_Store
 .project
 .pydevproject
